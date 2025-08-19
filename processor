@@ -1,0 +1,23 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const editor = document.getElementById("typeonly");
+  const status = document.getElementById("status");
+  if (!editor || !status) return;
+
+  // Block paste
+  editor.addEventListener("paste", e => {
+    e.preventDefault();
+    alert("Pasting is disabled. Please type only.");
+  });
+
+  // Block middle-click paste
+  editor.addEventListener("mousedown", e => {
+    if (e.button === 1) e.preventDefault();
+  });
+
+  // Update counts
+  editor.addEventListener("input", () => {
+    const text = editor.value;
+    const words = text.trim().split(/\s+/).filter(w => w.length).length;
+    status.textContent = `Words: ${words} | Characters: ${text.length}`;
+  });
+});
