@@ -2,93 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PureTyper Word Processor</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #f9f9f9;
-    }
-    h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-    #editor {
-      width: 980px;
-      height: 400px;
+    body { margin: 0; }
+    textarea {
+      width: 100%;
+      height: 100%;
       font-size: 16px;
       line-height: 1.4;
       padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      resize: vertical;
-    }
-    #status {
-      margin-top: 8px;
-      font-size: 14px;
-      color: #555;
-    }
-    #download {
-      margin-top: 15px;
-      padding: 8px 14px;
-      font-size: 14px;
       border: none;
-      border-radius: 6px;
-      background: #0073e6;
-      color: white;
-      cursor: pointer;
-    }
-    #download:hover {
-      background: #005bb5;
+      outline: none;
+      resize: none;
+      box-sizing: border-box;
     }
   </style>
 </head>
 <body>
-  <h1>Pure Typing Word Processor</h1>
-  <textarea 
-  id="editor" 
-  placeholder="Start typing..."
-  spellcheck="false"
-  autocorrect="off"
-  autocapitalize="off"
-  autocomplete="off">
-</textarea>
-  <p id="status">Words: 0 | Characters: 0</p>
-  <button id="download">Download Text</button>
+  <textarea id="innerEditor"
+    spellcheck="false"
+    autocorrect="off"
+    autocapitalize="off"
+    autocomplete="off"
+    placeholder="Start typing..."></textarea>
 
   <script>
-    const editor = document.getElementById("editor");
-    const status = document.getElementById("status");
-    const downloadBtn = document.getElementById("download");
-
-    // Disable paste (Ctrl+V, right-click, etc.)
+    const editor = document.getElementById("innerEditor");
+    // Disable paste
     editor.addEventListener("paste", e => {
       e.preventDefault();
       alert("Pasting is disabled. Please type only.");
     });
-
-    // Block middle-click paste (Linux/X11)
+    // Block middle-click paste
     editor.addEventListener("mousedown", e => {
       if (e.button === 1) e.preventDefault();
     });
-
-    // Update word/character count
+    // Send updates to parent
     editor.addEventListener("input", () => {
-      const text = editor.value;
-      const words = text.trim().split(/\s+/).filter(w => w.length).length;
-      status.textContent = `Words: ${words} | Characters: ${text.length}`;
-    });
-
-    // Download text file
-    downloadBtn.addEventListener("click", () => {
-      const blob = new Blob([editor.value], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "typeonly.txt";
-      a.click();
-      URL.revokeObjectURL(url);
+      parent.postMessage({ text: editor.value }, "*");
     });
   </script>
 </body>
